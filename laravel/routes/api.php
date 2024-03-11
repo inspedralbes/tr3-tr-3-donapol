@@ -19,5 +19,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+//rutas per pelicules
 Route::get('/movies', [MovieController::class, 'index']);
 Route::post('/movies', [MovieController::class, 'store']);

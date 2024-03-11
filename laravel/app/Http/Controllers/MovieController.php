@@ -3,43 +3,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Models\Movie;
 
 class MovieController extends Controller
 {
-    public function index(){
-         return view('movies.index');
-    }
-
-    public function show($id){
-        $response = Http::get('http://www.omdbapi.com/', [
-            'apikey' => '9f657d8a',
-            'i' => $id
-        ]);
-
-        $movie = $response->json();
-        return view('movies.show', compact('movie'));
-    }
-
-    public function search(Request $request)
+    public function index()
     {
-        $response = Http::get('http://www.omdbapi.com/', [
-            'apikey' => '9f657d8a',
-            's' => $request->query('query')
-        ]);
-
-        $movies = $response->json()['Search'];
-
-        return view('movies.search', compact('movies'));
+        $movies = Movie::all();
+        return response()->json($movies);
     }
 
-    public function getPoster($id)
+    public function store(Request $request)
     {
-        $response = Http::get('http://img.omdbapi.com/', [
-            'apikey' => '9f657d8a',
-            'i' => $id
-        ]);
+        $movie = new Movie();
+        $movie->title = $request->input('titol');
+        $movie->director = $request->input('director');
+        $movie->year = $request->input('any');
+        $movie->description = $request->input('descripcio');
+        $movie->save();
 
-        return redirect($response->header('Location'));
+        return response()->json($movie, 201);
     }
 }

@@ -1,10 +1,10 @@
-<template>
+<template>     
     <header class="header">
       <div class="logo">
         <img src="../img/logo.png" alt="Logo">
       </div>
       <div class="actions">
-        <button class="login-button" @click="goToLogin">Login</button>
+        <button class="login-button" @click="goToLogin">Inicia Sessió</button>
       </div>
     </header>
   </template>
@@ -21,24 +21,25 @@
   </script>
   
   <style scoped>
+
   .header {
     background-color: #333;
     color: white;
-    padding: 10px 20px;
+    padding: 10px 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
   
   .logo img {
-    width: 100px; 
+    width: 180px;
+    height: 70px; 
   }
   
   .login-button {
     background-color: #4CAF50;
-    border: none;
     color: white;
-    padding: 10px 20px;
+    padding: 10px 50px;
     text-align: center;
     text-decoration: none;
     display: inline-block;

@@ -15,7 +15,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div>    
   </template>
   
   <script>
@@ -49,6 +49,7 @@
   </script>
   
   <style lang="css" scoped>
+
   .cartelera {
     display: flex;
     flex-wrap: wrap;

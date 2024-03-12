@@ -3,12 +3,7 @@
   <div class="container">
       <div class="div-movie-cont" v-if="fetch_is_done">
           <h2 class="title">{{ movie_session.titol }}</h2>
-          <p class="year">{{ movie_session.any }}</p>
-      
           <img :src="movie_session.poster" alt="" class="poster">
-          <p class="synopsis">{{ movie_session.descripcio }}</p>
-          <p class="date">{{ movie_session.showing_date }}</p>
-          <p class="genreId">{{ movie_session.genre_id }}</p>
       </div>
 
       <div class="div-seats-cont">

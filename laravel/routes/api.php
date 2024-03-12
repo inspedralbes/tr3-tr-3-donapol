@@ -36,6 +36,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::get('seient/{id}', [SeatController::class, 'show']); //Mostrar un asiento
     Route::post('/insert-seients',[SeatController::class, 'insert']); //Insertar nuevo asiento
 
+    Route::get('movies/{id}/seats', [SeatController::class, 'showSeatsForMovie']);
+
+
 
 
 ?>

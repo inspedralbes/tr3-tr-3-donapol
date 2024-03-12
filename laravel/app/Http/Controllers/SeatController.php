@@ -26,12 +26,12 @@ class SeatController extends Controller
                 'status' => $seat['status'],
             ]);
         }
-        return response()->json(['message' => 'seats inserted'], 201);
+        return response()->json(['message' => 'Seient afegit'], 201);
     }
-
 
     public function show($id)
     {
         return Seat::where('movie_id', $id)->get();
     }
+
 }

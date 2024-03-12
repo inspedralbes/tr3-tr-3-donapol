@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('seats', function (Blueprint $table) {
             $table->id();
-            $table->enum('status', ['available', 'booked'])->default('available');
+            $table->enum('status', ['true', 'false'])->default('true');
             $table->unsignedBigInteger('movie_id');
             $table->foreign('movie_id')->references('id')->on('movies');
             $table->timestamps();

@@ -7,46 +7,31 @@ use App\Models\Seat;
 
 class SeatController extends Controller
 {
-    /**
-     * Muestra todos los asientos de una sesión específica.
-     *
-     * @param  int  $sessionId
-     * @return \Illuminate\Http\Response
-     */
-    public function index($sessionId)
+    //
+
+    public function index()
     {
-        try {
-            $seats = Seat::where('session_id', $sessionId)->get();
-            return response()->json(['success' => true, 'seats' => $seats], 200);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error al recuperar los asientos'], 500);
-        }
+        return Seat::all();
     }
 
-    /**
-     * Crea un nuevo asiento para una sesión específica.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $sessionId
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request, $sessionId)
+    public function insert(Request $request)
     {
-        $request->validate([
-            'seat_num' => 'required|string|unique:seats',
-            'es_reservat' => 'required|boolean',
-        ]);
+        $seats = $request->json()->all();
 
-        try {
-            $seat = new Seat();
-            $seat->session_id = $sessionId;
-            $seat->seat_num = $request->seat_num;
-            $seat->es_reservat = $request->es_reservat;
-            $seat->save();
-            
-            return response()->json(['success' => true, 'seat' => $seat], 201);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => 'Error al crear el asiento'], 500);
+       
+
+        foreach ($seats as $seat) {
+            Seat::create([
+                'movie_id' => $seat['movie_id'],
+                'status' => $seat['status'],
+            ]);
         }
+        return response()->json(['message' => 'seats inserted'], 201);
+    }
+
+
+    public function show($id)
+    {
+        return Seat::where('movie_id', $id)->get();
     }
 }

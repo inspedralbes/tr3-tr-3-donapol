@@ -9,8 +9,6 @@ class Seat extends Model
 {
     use HasFactory;
 
-    public function session(){
-        
-    return $this->belongsTo(Session::class);
-    }
+    protected $fillable = ['status', 'movie_id'];
+   
 }

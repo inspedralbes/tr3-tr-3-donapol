@@ -12,9 +12,6 @@
           <p><b>Director:</b> {{ estreno.director }}</p>
           <p><b>Año:</b> {{ estreno.any }}</p>
           <p>{{ estreno.descripcio }}</p>
-          <router-link :to="'/reservar/' + estreno.id">
-            <button class="reservar-button">Reservar sesión</button>
-          </router-link>
         </div>
       </div>
     </div>

@@ -7,8 +7,11 @@
           <div
             v-for="(seat, seatIndex) in row"
             :key="seatIndex"
-            class="seat"
-            :class="{ 'seat-selected': seat.selected }"
+            :class="{
+              'seat-selected': seat.selected,
+              'seat-reserved': seat.reserved,
+              'seat-available': !seat.reserved && !seat.selected,
+            }"
             @click="toggleSeat(rowIndex, seatIndex)"
           >
             {{ seat.name }}
@@ -24,55 +27,67 @@
     data() {
       return {
         movieTitle: "",
-        seats: this.generateSeats(),
+        seats: [],
+        selectedSeats: [],
       };
     },
     mounted() {
       const movieId = this.$route.params.id;
-      // Aquí puedes realizar cualquier lógica adicional que necesites para cargar los datos de la película
+      this.fetchMovieDetails(movieId);
     },
     methods: {
-      generateSeats() {
-        const rows = 12;
-        const columns = 10;
-        const seats = [];
-        for (let i = 0; i < rows; i++) {
-          const row = [];
-          for (let j = 0; j < columns; j++) {
-            row.push({ name: `${String.fromCharCode(65 + i)}${j + 1}`, selected: false });
+      async fetchMovieDetails(movieId) {
+        try {
+          const response = await fetch(`http://localhost:8000/api/movies/${movieId}`);
+          const data = await response.json();
+          if (response.ok) {
+            this.movieTitle = data.titol;
+            this.generateSeats(data.seats); // Aquí pasamos los datos de los asientos
+          } else {
+            console.error('Error al obtener los detalles de la película:', data.message);
           }
-          seats.push(row);
+        } catch (error) {
+          console.error('Error al obtener los detalles de la película:', error);
         }
-        return seats;
+      },
+      generateSeats(seatsData) {
+        // Generar los asientos disponibles para la reserva
+        // Agregamos la información de reservado a cada asiento
+        this.seats = seatsData.map(row => row.map(seat => ({
+          name: seat.name,
+          reserved: seat.reserved, // Asumiendo que el backend proporciona esta información
+          selected: false,
+        })));
       },
       toggleSeat(rowIndex, seatIndex) {
-        this.$set(this.seats[rowIndex], seatIndex, {
-          ...this.seats[rowIndex][seatIndex],
-          selected: !this.seats[rowIndex][seatIndex].selected,
-        });
+        // Manejar la selección/deselección de asientos por parte del usuario
+        // Puedes seguir el mismo enfoque que tienes en tu componente
       },
-      confirmReservation() {
-        const selectedSeats = this.seats.flatMap((row) =>
-          row.filter((seat) => seat.selected)
-        );
-        console.log("Asientos seleccionados:", selectedSeats);
-        // Aquí puedes agregar la lógica para confirmar la reserva
+      async confirmReservation() {
+        try {
+          const response = await fetch(`/api/sessions/${this.$route.params.id}/seats/reserve`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ selectedSeats: this.selectedSeats }),
+          });
+          const data = await response.json();
+          if (response.ok) {
+            console.log('Reserva confirmada:', data.message);
+          } else {
+            console.error('Error al confirmar la reserva:', data.message);
+          }
+        } catch (error) {
+          console.error('Error al confirmar la reserva:', error);
+        }
       },
     },
   };
   </script>
   
   <style scoped>
-  .seats-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .seat-row {
-    display: flex;
-  }
-  
+  /* Estilos para los asientos */
   .seat {
     width: 50px;
     height: 50px;
@@ -82,7 +97,6 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    background-color: #f0f0f0; /* Color de fondo de las butacas */
   }
   
   .seat-selected {
@@ -90,11 +104,13 @@
     color: #fff;
   }
   
-  button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
+  .seat-reserved {
+    background-color: #ccc; /* Color para los asientos reservados */
+    cursor: not-allowed; /* Cursor de no permitido para asientos reservados */
+  }
+  
+  .seat-available:hover {
+    background-color: #f0f0f0; /* Color para los asientos disponibles al pasar el ratón */
   }
   </style>
-  
+    

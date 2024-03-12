@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('movies', function (Blueprint $table) {
+        Schema::create('seats', function (Blueprint $table) {
             $table->id();
-            $table->string('titol');
-            $table->string('director');
-            $table->integer('any');
-            $table->text('descripcio')->nullable();
-            $table->time('hora')->nullable();
-            $table->string('img')->nullable();
+            $table->foreignId('session_id')->constrained()->onDelete('cascade');
+            $table->string('seat_num');
+            $table->boolean('es_reservat')->default(false);
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('movies');
+        Schema::dropIfExists('seats');
     }
 };

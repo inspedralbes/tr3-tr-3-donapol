@@ -23,20 +23,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Rutas para las películas
-    Route::get('movie', [MovieController::class, 'index']); // Mostrar todas las películas
-    Route::post('movie', [MovieController::class, 'store']); // Crear una nueva película
-    Route::get('movie/{id}', [MovieController::class, 'show']); //Mostrar una peli por id
-
-    // Rutas para las sesiones de una película específica
-        Route::get('session', [SessionController::class, 'index']); // Mostrar todas las sesiones de una película
-        Route::post('session', [SessionController::class, 'store']); // Crear una nueva sesión para una película
+    Route::post('movies', [App\Http\Controllers\MovieController::class, 'insert']); //Insertar nueva peli
+    Route::get('movies', [App\Http\Controllers\MovieController::class, 'index']); //Mostrar todas las pelis
+    Route::get('movies/{id}', [App\Http\Controllers\MovieController::class, 'show']); //Mostrar una peli por id
+    Route::put('movies/{id}', [App\Http\Controllers\MovieController::class, 'update']); //Actualizar peli
+    Route::delete('movies/{id}', [App\Http\Controllers\MovieController::class, 'destroy']); //Eliminar peli
 
 
-    // Rutas para los asientos de una sesión específica
-        Route::get('seient', [SeatController::class, 'index']); // Mostrar todos los asientos de una sesión
-        Route::post('seient', [SeatController::class, 'store']); // Crear un nuevo asiento para una sesión
-        Route::get('seient/{id}', [SeatController::class, 'show']);
-        Route::post('/insert-seients',[SeatController::class, 'insert']);
+// Rutas para los asientos de una sesión específica
+    Route::get('seient', [SeatController::class, 'index']); // Mostrar todos los asientos de una sesión
+    Route::post('seient', [SeatController::class, 'store']); // Crear un nuevo asiento para una sesión
+    Route::get('seient/{id}', [SeatController::class, 'show']); //Mostrar un asiento
+    Route::post('/insert-seients',[SeatController::class, 'insert']); //Insertar nuevo asiento
 
 
 

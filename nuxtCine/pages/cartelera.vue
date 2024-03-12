@@ -12,8 +12,14 @@
           <p><b>Director:</b> {{ estreno.director }}</p>
           <p><b>Año:</b> {{ estreno.any }}</p>
           <p>{{ estreno.descripcio }}</p>
+
+          <NuxtLink :to="'/reserva/' + estreno.id">
+            <button class="reservar-button">Reservar seints</button>
+          </NuxtLink>
+          
         </div>
       </div>
+      
     </div>
   </div>
 </template>

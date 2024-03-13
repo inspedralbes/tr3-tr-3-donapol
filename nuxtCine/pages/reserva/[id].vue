@@ -1,33 +1,65 @@
 <template>
   <Header />
   <!-- Mostrar GIF de carga mientras carga la página -->
-  <div v-if="!fetch_is_done" class="loading-container">
-    <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Cargando...">
+  <div v-if="!fetch_fet" class="loading-container">
+    <div class="loading">
+      <img
+        src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+        alt="Cargando..."
+      />
+    </div>
   </div>
 
   <div v-else class="container">
     <div class="div-movie-cont">
       <h1 class="title">{{ movie_session.titol }}</h1>
-      <img :src="movie_session.poster" alt="" class="poster">
+      <img :src="movie_session.poster" alt="" class="poster" />
     </div>
     <div class="screen">PANTALLA</div>
-    <!-- Mostrar sillas fila por fila -->
+    <!-- Mostrar seients fila a fila -->
     <div v-for="row in 12" :key="row" class="div-seats-row">
-      <div v-for="seat in seats.filter(seat => seat.fila === row)" :key="seat.id" class="div-seat-cont" :class="{ 'div-seat-cont--clicked': isSelected(seat.id), 'div-seat-cont--occupied': seat.status === 'false' }" @click="seat_selected(seat)">
-        <img src="https://cdn-icons-png.flaticon.com/512/4221/4221960.png" alt="seientlliure" srcset="" class="seat-icon" v-if="seat.status === 'true'">
-        <img src="https://cdn-icons-png.flaticon.com/512/4221/4221971.png" alt="seientOcupat" srcset="" class="seat-icon" v-if="seat.status === 'false'">
+      <div
+        v-for="seat in seients.filter((seat) => seat.fila === row)"
+        :key="seat.id"
+        class="div-seat-cont"
+        :class="{
+          'div-seat-cont--clicked': isSelected(seat.id),
+          'div-seat-cont--occupied': seat.status === 'false',
+        }"
+        @click="seat_selected(seat)"
+      >
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/4221/4221960.png"
+          alt="seientlliure"
+          srcset=""
+          class="seat-icon"
+          v-if="seat.status === 'true'"
+        />
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/4221/4221971.png"
+          alt="seientOcupat"
+          srcset=""
+          class="seat-icon"
+          v-if="seat.status === 'false'"
+        />
       </div>
     </div>
   </div>
 
-  <!-- Recuadro para la butaca seleccionada -->
-  <div v-if="selected_seats.length > 0" class="selected-seat">
-    <p>Butacas seleccionadas:</p>
-    <div v-for="seat in selected_seats" :key="seat.id" class="selected-seat-item">
+  <!-- Informacio sobre butaca seleccionada -->
+  <div v-if="selected_seients.length > 0" class="selected-seat">
+    <p>Preu Total: {{ selected_seients.length * preuUnitari }}€</p>
+    <p>Butaques seleccionades:</p>
+    <div
+      v-for="seat in selected_seients"
+      :key="seat.id"
+      class="selected-seat-item"
+    >
       <span>{{ seat.fila }} - {{ seat.columna }}</span>
     </div>
-    <!-- Botón para la confirmación de compra -->
-    <button @click="confirmarCompra" class="confirm-button">Confirmar compra</button>
+    <button @click="confirmarCompra" class="confirm-button">
+      Confirmar compra
+    </button>
   </div>
 </template>
 
@@ -37,87 +69,94 @@ export default {
     return {
       movie_session_id: null,
       movie_session: null,
-      fetch_is_done: false,
-      seats: [],
-      fetchSeats_is_done: false,
-      selected_seats: [],
-      maxSeats: 10, 
-    }
+      fetch_fet: false,
+      seients: [],
+      fetchSeients_fet: false,
+      selected_seients: [],
+      maxSeients: 10,
+      preuUnitari: 6,
+    };
   },
   methods: {
     fetchData() {
       fetch(`http://localhost:8000/api/movies/${this.movie_session_id}`)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           if (data) {
             this.movie_session = data;
-            console.log('SESSION', this.movie_session);
-            console.log('DATA', data);
-            console.log('ID', this.movie_session_id)
-            this.fetch_is_done = true;
+            console.log("SESSION", this.movie_session);
+            console.log("DATA", data);
+            console.log("ID", this.movie_session_id);
+            this.fetch_fet = true;
           } else {
-            console.log('ERROR FETCHING DATA');
+            console.log("ERROR FETCHING DATA");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
         });
     },
     fetchDataSeats() {
       fetch(`http://localhost:8000/api/seient/${this.movie_session_id}`)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           if (data) {
-            this.seats = data;
-            console.log('SESSION', this.seats);
-            console.log('DATA', data);
-            this.fetchSeats_is_done = true;
+            this.seients = data;
+            console.log("SESSION", this.seients);
+            console.log("DATA", data);
+            this.fetchSeients_fet = true;
           } else {
-            console.log('ERROR FETCHING DATA');
+            console.log("ERROR FETCHING DATA");
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
         });
     },
     seat_selected(seat) {
-      // Verificar si se ha alcanzado el límite de asientos seleccionados
-      if (this.selected_seats.length < this.maxSeats) {
-        const index = this.selected_seats.findIndex(selectedSeat => selectedSeat.id === seat.id);
-        if (index === -1) {
-          this.selected_seats.push(seat);
+      const index = this.selected_seients.findIndex(
+        (selectedSeat) => selectedSeat.id === seat.id
+      );
+      // Verificar si el seient clict ya está seleccionat
+      if (index === -1) {
+        // Afegir el seient si encara no está seleccionat y si no ha tiat el maxim de seients seleccionats
+        if (this.selected_seients.length < this.maxSeients) {
+          this.selected_seients.push(seat);
         } else {
-          this.selected_seats.splice(index, 1);
+          alert(
+            `Solo puedes seleccionar un máximo de ${this.maxSeients} asientos.`
+          );
         }
       } else {
-        alert(`Solo puedes seleccionar un máximo de ${this.maxSeats} asientos.`);
+        // Si el asiento clicado ya está seleccionado, eliminarlo de la lista de asientos seleccionados
+        this.selected_seients.splice(index, 1);
       }
     },
     isSelected(id) {
-      return this.selected_seats.some(selectedSeat => selectedSeat.id === id);
+      return this.selected_seients.some((selectedSeat) => selectedSeat.id === id);
     },
     confirmarCompra() {
-  // Comprueba si se han seleccionado asientos
-  if (this.selected_seats.length > 0) {
-    // Obtiene los IDs de los asientos seleccionados
-    const selectedSeatIds = this.selected_seats.map(seat => seat.id);
-    // Redirige a la página de confirmación de compra y pasa los IDs de los asientos seleccionados como parámetro de ruta
-    this.$router.push({ 
-      path: '/confirmarCompra', 
-      params: { seatIds: selectedSeatIds, movieSessionId: this.movie_session_id } 
-    });
-  } else {
-    alert('Por favor, selecciona al menos un asiento antes de confirmar la compra.');
-  }
-}
+      if (this.selected_seients.length > 0) {
+        const precioUnitario = 6;
+        const precioTotal = this.selected_seients.length * precioUnitario;
 
+        this.$router.push({
+          path: "/confirmarCompra",
+          params: {
+            seatIds: this.selected_seients.map((seat) => seat.id),
+            movieSessionId: this.movie_session_id,
+            totalPrice: precioTotal,
+          },
+        });
+      }
+    },
   },
   created() {
     this.movie_session_id = this.$route.params.id;
     this.fetchData();
     this.fetchDataSeats();
   },
-}
+};
 </script>
 
 <style lang="css" scoped>
@@ -126,6 +165,17 @@ export default {
   flex-direction: column;
   align-items: center;
   padding: 20px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loading {
+  text-align: center;
 }
 
 .movie-title {
@@ -162,7 +212,7 @@ export default {
 }
 
 .div-seat-cont--occupied {
-  background-color: #d9534f; 
+  background-color: #d9534f;
 }
 
 .seat-icon {
@@ -176,7 +226,7 @@ export default {
   left: 0;
   width: 100%;
   padding: 40px;
-  background-color: #aeb3b8; 
+  background-color: #aeb3b8;
   color: black;
   display: flex;
   justify-content: center;
@@ -197,8 +247,8 @@ export default {
 
 .confirm-button {
   margin-top: 10px;
-  padding: 10px 40px; 
-  background-color: #007bff; 
+  padding: 10px 40px;
+  background-color: #007bff;
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -206,6 +256,6 @@ export default {
 }
 
 .confirm-button:hover {
-  background-color: #0056b3; 
+  background-color: #0056b3;
 }
 </style>

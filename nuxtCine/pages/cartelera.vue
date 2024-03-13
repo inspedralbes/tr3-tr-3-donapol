@@ -1,7 +1,7 @@
 <template>
   <div>
     <Header />
-    <h1 class="title">Cartelera Yelmo</h1> 
+    <h1 class="title">Pròximes sessions</h1> 
     <div class="container">
       <div v-for="estreno in estrenos" :key="estreno.id" class="card">
         <div class="image">

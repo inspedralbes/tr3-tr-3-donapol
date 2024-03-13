@@ -15,7 +15,9 @@
       <h1 class="title">{{ movie_session.titol }}</h1>
       <img :src="movie_session.poster" alt="" class="poster" />
     </div>
+
     <div class="screen">PANTALLA</div>
+
     <!-- Mostrar seients fila a fila -->
     <div v-for="row in 12" :key="row" class="div-seats-row">
       <div
@@ -28,12 +30,21 @@
         }"
         @click="seat_selected(seat)"
       >
+      <img
+          v-if=" seat.vip === 'true' && seat.status === 'true' "
+          src="https://cdn-icons-png.flaticon.com/512/470/470101.png"
+          alt="seientlliure"
+          srcset=""
+          class="seat-icon"
+        />
+        
         <img
+        
           src="https://cdn-icons-png.flaticon.com/512/4221/4221960.png"
           alt="seientlliure"
           srcset=""
           class="seat-icon"
-          v-if="seat.status === 'true'"
+          v-if=" seat.vip === 'false' && seat.status === 'true' "
         />
         <img
           src="https://cdn-icons-png.flaticon.com/512/4221/4221971.png"

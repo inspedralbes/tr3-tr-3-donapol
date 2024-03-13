@@ -9,6 +9,6 @@ class Seat extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['status', 'movie_id', 'columna', 'fila'];
+    protected $fillable = ['status', 'movie_id', 'columna', 'fila', 'vip'];
    
 }

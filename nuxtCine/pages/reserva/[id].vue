@@ -1,12 +1,16 @@
 <template>
   <Header />
-  <div class="container">
-    <div class="screen">Pantalla</div> <!-- Recuadro para la pantalla -->
-    <div class="div-movie-cont" v-if="fetch_is_done">
+  <!-- Mostrar GIF de carga mientras carga la página -->
+  <div v-if="!fetch_is_done" class="loading-container">
+    <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="Cargando...">
+  </div>
+
+  <div v-else class="container">
+    <div class="div-movie-cont">
       <h1 class="title">{{ movie_session.titol }}</h1>
       <img :src="movie_session.poster" alt="" class="poster">
     </div>
-
+    <div class="screen">PANTALLA</div>
     <!-- Mostrar sillas fila por fila -->
     <div v-for="row in 12" :key="row" class="div-seats-row">
       <div v-for="seat in seats.filter(seat => seat.fila === row)" :key="seat.id" class="div-seat-cont" :class="{ 'div-seat-cont--clicked': isSelected(seat.id), 'div-seat-cont--occupied': seat.status === 'false' }" @click="seat_selected(seat)">
@@ -37,6 +41,7 @@ export default {
       seats: [],
       fetchSeats_is_done: false,
       selected_seats: [],
+      maxSeats: 10, 
     }
   },
   methods: {
@@ -76,19 +81,36 @@ export default {
         });
     },
     seat_selected(seat) {
-      const index = this.selected_seats.findIndex(selectedSeat => selectedSeat.id === seat.id);
-      if (index === -1) {
-        this.selected_seats.push(seat);
+      // Verificar si se ha alcanzado el límite de asientos seleccionados
+      if (this.selected_seats.length < this.maxSeats) {
+        const index = this.selected_seats.findIndex(selectedSeat => selectedSeat.id === seat.id);
+        if (index === -1) {
+          this.selected_seats.push(seat);
+        } else {
+          this.selected_seats.splice(index, 1);
+        }
       } else {
-        this.selected_seats.splice(index, 1);
+        alert(`Solo puedes seleccionar un máximo de ${this.maxSeats} asientos.`);
       }
     },
     isSelected(id) {
       return this.selected_seats.some(selectedSeat => selectedSeat.id === id);
     },
     confirmarCompra() {
-      // Lógica para la confirmación de compra
-    }
+  // Comprueba si se han seleccionado asientos
+  if (this.selected_seats.length > 0) {
+    // Obtiene los IDs de los asientos seleccionados
+    const selectedSeatIds = this.selected_seats.map(seat => seat.id);
+    // Redirige a la página de confirmación de compra y pasa los IDs de los asientos seleccionados como parámetro de ruta
+    this.$router.push({ 
+      path: '/confirmarCompra', 
+      params: { seatIds: selectedSeatIds, movieSessionId: this.movie_session_id } 
+    });
+  } else {
+    alert('Por favor, selecciona al menos un asiento antes de confirmar la compra.');
+  }
+}
+
   },
   created() {
     this.movie_session_id = this.$route.params.id;
@@ -113,7 +135,7 @@ export default {
 }
 
 .screen {
-  width: 100%;
+  width: 40%;
   height: 30px;
   background-color: #333;
   color: #fff;
@@ -126,7 +148,7 @@ export default {
 .div-seats-row {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 20px;
 }
 
 .div-seat-cont {
@@ -136,11 +158,11 @@ export default {
 }
 
 .div-seat-cont--clicked {
-  background-color: green;
+  background-color: #5cb85c;
 }
 
 .div-seat-cont--occupied {
-  background-color: red;
+  background-color: #d9534f; 
 }
 
 .seat-icon {
@@ -153,8 +175,8 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding: 20px;
-  background-color: #007bff;
+  padding: 40px;
+  background-color: #aeb3b8; 
   color: black;
   display: flex;
   justify-content: center;
@@ -169,22 +191,21 @@ export default {
 .selected-seat-item {
   margin: 5px;
   padding: 5px 10px;
-  background-color: #fff;
+  background-color: white;
   border-radius: 5px;
 }
 
 .confirm-button {
   margin-top: 10px;
-  padding: 10px 20px;
-  background-color: #fff;
-  color: #007bff;
-  border: 2px solid #007bff;
+  padding: 10px 40px; 
+  background-color: #007bff; 
+  color: #fff;
+  border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
 .confirm-button:hover {
-  background-color: #007bff;
-  color: #fff;
+  background-color: #0056b3; 
 }
 </style>

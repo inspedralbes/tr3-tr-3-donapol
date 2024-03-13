@@ -21,15 +21,15 @@
     <!-- Mostrar seients fila a fila -->
     <div v-for="row in 12" :key="row" class="div-seats-row">
       <div
-        v-for="seat in seients.filter((seat) => seat.fila === row)"
-        :key="seat.id"
-        class="div-seat-cont"
-        :class="{
-          'div-seat-cont--clicked': isSelected(seat.id),
-          'div-seat-cont--occupied': seat.status === 'false',
-        }"
-        @click="seat_selected(seat)"
-      >
+  v-for="seat in seients.filter((seat) => seat.fila === row)"
+  :key="seat.id"
+  class="div-seat-cont"
+  :class="{
+    'div-seat-cont--clicked': isSelected(seat.id),
+    'div-seat-cont--occupied': seat.status === 'false',
+  }"
+  @click="seat.status === 'true' && seat_selected(seat)"
+>
       <img
           v-if=" seat.vip === 'true' && seat.status === 'true' "
           src="https://cdn-icons-png.flaticon.com/512/470/470101.png"
@@ -51,7 +51,15 @@
           alt="seientOcupat"
           srcset=""
           class="seat-icon"
-          v-if="seat.status === 'false'"
+          v-if="seat.status === 'false' && seat.vip === 'false'"
+        />
+
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/470/470101.png"
+          alt="seientOcupat"
+          srcset=""
+          class="seat-icon"
+          v-if="seat.status === 'false' && seat.vip === 'true'"
         />
       </div>
     </div>

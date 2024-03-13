@@ -1,218 +1,137 @@
 <template>
-
+  <Header />
   <div class="container">
-      <div class="div-movie-cont" v-if="fetch_is_done">
-          <h2 class="title">{{ movie_session.titol }}</h2>
-          <img :src="movie_session.poster" alt="" class="poster">
+    <div class="div-movie-cont" v-if="fetch_is_done">
+      <h1 class="title">{{ movie_session.titol }}</h1>
+      <img :src="movie_session.poster" alt="" class="poster">
+    </div>
+
+    <div class="div-seats-cont">
+      <div v-for="seat in seats" :key="seat.id" class="div-seat-cont" :class="{ 'div-seat-cont--clicked': isSelected(seat.id), 'div-seat-cont--occupied': seat.status === 'false' }" @click="seat_selected(seat.id)" @double-click="seat_selected(seat.id)">
+        <img src="https://cdn-icons-png.flaticon.com/512/4221/4221960.png" alt="seientlliure" srcset="" class="seat-icon" v-if="seat.status === 'true'">
+        <img src="https://cdn-icons-png.flaticon.com/512/4221/4221971.png" alt="seientOcupat" srcset="" class="seat-icon" v-if="seat.status === 'false'">
       </div>
-
-      <div class="div-seats-cont">
-          <div v-for="seat in  seats" :key="seat.id" class="div-seat-cont"
-          :class="{ 'div-seat-cont--clicked': isSelected(seat.id) }"
-          @click="seat_selected(seat.id)"
-          @double-click="seat_selected(seat.id)"
-          >
-
-              <img src="../public/seat.svg" alt="" srcset=""
-              class="seat-icon"               
-              v-if="seat.status === 'available'">
-
-              <img src="../public/seat_unavaliable.png" alt="" srcset=""
-              class="seat-icon"
-              v-if="seat.status === 'unavailable'">
-
-          </div>
-      </div>
+    </div>
   </div>
-
-
-
-
-
 </template>
 
 <script>
 export default {
   data() {
-      return {
-          movie_session_id: null,
-          movie_session: null,
-          fetch_is_done: false,
-          seats: [],
-          fetchSeats_is_done: false,
-          selected_seats: [],
-      }
+    return {
+      movie_session_id: null,
+      movie_session: null,
+      fetch_is_done: false,
+      seats: [],
+      fetchSeats_is_done: false,
+      selected_seats: [],
+    }
   },
   methods: {
-      fetchData() {
-          fetch(`http://localhost:8000/api/movies/${this.movie_session_id}`)
-              .then(response => response.json())
-              .then(data => {
-                  if (data) {
-                      this.movie_session = data;
-                      console.log('SESSION', this.movie_session);
-                      console.log('DATA', data);
-                      console.log('ID', this.movie_session_id)
-                      this.fetch_is_done = true;
-                  } else {
-                      console.log('ERROR FETCHING DATA');
-                  }
-              })
-              .catch(error => {
-                  console.error(error);
-              });
-      },
-      fetchDataSeats() {
-          fetch(`http://localhost:8000/api/seient/${this.movie_session_id}`)
-              .then(response => response.json())
-              .then(data => {
-                  if (data) {
-                      this.seats = data;
-                      console.log('SESSION', this.seats);
-                      console.log('DATA', data);
-                      this.fetchSeats_is_done = true;
-                  } else {
-                      console.log('ERROR FETCHING DATA');
-                  }
-              })
-              .catch(error => {
-                  console.error(error);
-              });
-      },
-      seat_selected(id) {
-          const index = this.selected_seats.indexOf(id);
-
-          if (index === -1) {
-              this.selected_seats.push(id);
+    fetchData() {
+      fetch(`http://localhost:8000/api/movies/${this.movie_session_id}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data) {
+            this.movie_session = data;
+            console.log('SESSION', this.movie_session);
+            console.log('DATA', data);
+            console.log('ID', this.movie_session_id)
+            this.fetch_is_done = true;
           } else {
-              this.selected_seats.splice(index, 1);
+            console.log('ERROR FETCHING DATA');
           }
-      },
-      isSelected(id) {
-          return this.selected_seats.includes(id);
-      },
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    fetchDataSeats() {
+      fetch(`http://localhost:8000/api/seient/${this.movie_session_id}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data) {
+            this.seats = data;
+            console.log('SESSION', this.seats);
+            console.log('DATA', data);
+            this.fetchSeats_is_done = true;
+          } else {
+            console.log('ERROR FETCHING DATA');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    seat_selected(id) {
+      const index = this.selected_seats.indexOf(id);
+
+      if (index === -1) {
+        this.selected_seats.push(id);
+      } else {
+        this.selected_seats.splice(index, 1);
+      }
+    },
+    isSelected(id) {
+      return this.selected_seats.includes(id);
+    },
   },
   created() {
-      this.movie_session_id = this.$route.params.id;
-      this.fetchData();
-      this.fetchDataSeats();
+    this.movie_session_id = this.$route.params.id;
+    this.fetchData();
+    this.fetchDataSeats();
   },
-
 }
-
 </script>
 
-<style lang="scss" scoped>
+<style lang="css" scoped>
 .container {
-  display: grid;
-  justify-content: center;
-  grid-template-columns: 0.5fr 1fr 1fr 0.5fr;
-  grid-template-areas: ". div-movie-cont div-seats-cont .";
-  height: auto;
-}
-
-.div-movie-cont {
-  grid-area: div-movie-cont;
   display: flex;
   flex-direction: column;
-  align-items: start;
-  margin: 5px;
-  padding: 20px;
-  border: 2px solid black;
-  border-radius: 10px;
-  max-width: 600px;
-  background-color: #fff;
   align-items: center;
-  text-align: center;
-
+  padding: 20px;
 }
 
+.movie-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
 
+.screen {
+  width: 100%;
+  height: 30px;
+  background-color: #333;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
 
 .div-seats-cont {
-  grid-area: div-seats-cont;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 5px;
-  padding: 30px;
-  border: 2px solid black;
-  border-radius: 10px;
-  max-width: 600px;
-  background-color: #ffffffbe;
-  text-align: center;
+  gap: 10px;
 }
 
 .div-seat-cont {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  margin: 5px;
-  padding: 20px;
-  height: 60px;
-  border: 2px solid black;
-  border-radius: 20px;
-  max-width: 30px;
-  background-color: #fff;
-  text-align: center;
 }
 
-.div-seat-cont:hover {
- 
-  box-shadow: 0px 1px 1px 1px #000000d7;
-  cursor: pointer;
+.div-seat-cont--clicked {
+  background-color: #007bff;
 }
 
-
+.div-seat-cont--occupied {
+  background-color: #999;
+}
 
 .seat-icon {
-  width: 50px;
-  height: 50px;
-  margin: 10px;
-}
-
-.div-seat-cont--clicked{
-  background-color: rgba(218, 206, 206, 0.87);
-
-}
-
-
-
-.title {
-  font-size: 3em;
-  margin: 10px;
-}
-
-.year {
-  font-size: 1.5em;
-  margin: 10px;
-}
-
-.rating {
-  font-size: 1.5em;
-  margin: 10px;
-}
-
-.synopsis {
-  font-size: 1.5em;
-  margin: 10px;
-}
-
-.date {
-  font-size: 1.5em;
-  margin: 10px;
-}
-.poster{
-  border-radius: 16px;
-}
-
-nuxt-link {
-  text-decoration: none;
-  color: black;
-}
-
-a {
-  text-decoration: none;
-  color: black;
+  width: 40px;
+  height: 40px;
 }
 </style>

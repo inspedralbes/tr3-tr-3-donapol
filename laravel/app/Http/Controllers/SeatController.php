@@ -24,6 +24,8 @@ class SeatController extends Controller
             Seat::create([
                 'movie_id' => $seat['movie_id'],
                 'status' => $seat['status'],
+                'columna' => $seat['columna'], 
+                'fila' => $seat['fila'],  
             ]);
         }
         return response()->json(['message' => 'Seient afegit'], 201);

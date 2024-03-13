@@ -17,7 +17,9 @@ return new class extends Migration
             $table->id();
             $table->enum('status', ['true', 'false'])->default('true');
             $table->unsignedBigInteger('movie_id');
-            $table->foreign('movie_id')->references('id')->on('movies');
+            $table->foreign('movie_id')->references('id')->on('movies');    
+            $table->integer('columna')->nullable();
+            $table->integer('fila')->nullable();
             $table->timestamps();
         });
     }

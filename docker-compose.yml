@@ -1,0 +1,39 @@
+services:
+
+  laravel:
+    #Tenim un dockerfile amb PHP i Composer i les utilitats de docker per php per aixecar un servidor Laravel
+    build: ./laravel
+    ports:
+      - 8000:8000
+    volumes:
+      - ./laravel:/var/www/
+    working_dir: /var/www/
+    command: bash -c "composer install && php artisan migrate && php artisan key:generate&&php artisan serve --host=0.0.0.0"    
+
+
+
+
+  # Aplicació per accedir via web a la nostra base de dades, al port 9090
+  adminer:
+    image: adminer:4.7.7
+    restart: always
+    ports:
+      - 9090:8080
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.2.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: user
+      MYSQL_PASSWORD: user
+    ports:
+      - 3306:3306
+    volumes:
+      # Per guardar les dades de forma persistent
+      - ./mysql_data:/var/lib/mysql
+      # Per crear algunes taules al primer inici
+      - ./mysql/dades.sql:/docker-entrypoint-initdb.d/dades.sql

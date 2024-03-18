@@ -26,6 +26,7 @@ class SeatController extends Controller
                 'status' => $seat['status'],
                 'columna' => $seat['columna'], 
                 'fila' => $seat['fila'],  
+                'vip' => $seat['vip'],
             ]);
         }
         return response()->json(['message' => 'Seient afegit'], 201);

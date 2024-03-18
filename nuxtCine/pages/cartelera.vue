@@ -1,7 +1,7 @@
 <template>
   <div>
     <Header />
-    <h1>Cartelera</h1>
+    <h1 class="title">Pròximes sessions</h1> 
     <div class="container">
       <div v-for="estreno in estrenos" :key="estreno.id" class="card">
         <div class="image">
@@ -103,6 +103,12 @@ export default {
 
 .card:hover .content {
   transform: translateY(0); 
+}
+
+h1.title { 
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 4rem; 
 }
 
 h3 {

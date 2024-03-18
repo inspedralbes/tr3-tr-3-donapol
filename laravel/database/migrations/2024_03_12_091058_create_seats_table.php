@@ -20,6 +20,7 @@ return new class extends Migration
             $table->foreign('movie_id')->references('id')->on('movies');    
             $table->integer('columna')->nullable();
             $table->integer('fila')->nullable();
+            $table->enum('vip', ['true', 'false'])->default('false');
             $table->timestamps();
         });
     }

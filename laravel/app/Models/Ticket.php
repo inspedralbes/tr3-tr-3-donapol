@@ -5,10 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Seat extends Model
+class Ticket extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['status', 'movie_id', 'columna', 'fila', 'vip'];
-   
+    protected $fillable = [
+        'movie_id',
+        'seat_id',
+        'preu',
+        'email'
+    ];
+
 }

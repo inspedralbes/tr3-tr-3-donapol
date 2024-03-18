@@ -97,6 +97,8 @@ export default {
     };
   },
   methods: {
+
+    // Obté les dades de la sessió de la pel·lícula des del servidor
     fetchData() {
       fetch(`http://localhost:8000/api/movies/${this.movie_session_id}`)
         .then((response) => response.json())
@@ -115,6 +117,7 @@ export default {
           console.error(error);
         });
     },
+    // Obté les dades dels seients disponibles per a la sessió de la pel·lícula
     fetchDataSeats() {
       fetch(`http://localhost:8000/api/seient/${this.movie_session_id}`)
         .then((response) => response.json())
@@ -132,6 +135,7 @@ export default {
           console.error(error);
         });
     },
+    // Controla la selecció d'un seient per l'usuari
     seat_selected(seat) {
       const index = this.selected_seients.findIndex(
         (selectedSeat) => selectedSeat.id === seat.id
@@ -151,25 +155,36 @@ export default {
         this.selected_seients.splice(index, 1);
       }
     },
+    // Verifica si un seient està seleccionat o no
     isSelected(id) {
       return this.selected_seients.some((selectedSeat) => selectedSeat.id === id);
     },
+    // Confirma la compra dels seients seleccionats i redirigeix a la pàgina de confirmació
     confirmarCompra() {
-      if (this.selected_seients.length > 0) {
-        const precioUnitario = 6;
-        const precioTotal = this.selected_seients.length * precioUnitario;
+  if (this.selected_seients.length > 0) {
+    const preuUnitari = 6;
+    const precioTotal = this.selected_seients.length * preuUnitari;
 
-        this.$router.push({
-          path: "/confirmarCompra",
-          params: {
-            seatIds: this.selected_seients.map((seat) => seat.id),
-            movieSessionId: this.movie_session_id,
-            totalPrice: precioTotal,
-          },
-        });
-      }
-    },
+    // Mapear los asientos seleccionados para enviar el ID, fila y columna
+    const asientosSeleccionados = this.selected_seients.map(seat => ({
+      id: seat.id,
+      fila: seat.fila,
+      columna: seat.columna
+    }));
+
+    this.$router.push({
+      path: "/confirmarCompra",
+      query: {
+        infoSeients: JSON.stringify(asientosSeleccionados), // Convertir el array de asientos seleccionados a JSON
+        movieSessionId: this.movie_session_id,
+        nomPeli: this.movie_session.titol,
+        preuTotal: precioTotal,
+      },
+    });
+  }
+},
   },
+  // Es crida quan el component es crea, s'utilitza per obtenir les dades necessàries per la pàgina
   created() {
     this.movie_session_id = this.$route.params.id;
     this.fetchData();

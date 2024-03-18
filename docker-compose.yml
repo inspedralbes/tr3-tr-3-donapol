@@ -1,39 +1,60 @@
+version: '3.8'
+
 services:
-
-  laravel:
-    #Tenim un dockerfile amb PHP i Composer i les utilitats de docker per php per aixecar un servidor Laravel
-    build: ./laravel
-    ports:
-      - 8000:8000
+  laravel-app:
+    image: php:8.1-fpm
+    container_name: laravel
+    working_dir: /var/www
     volumes:
-      - ./laravel:/var/www/
-    working_dir: /var/www/
-    command: bash -c "composer install && php artisan migrate && php artisan key:generate&&php artisan serve --host=0.0.0.0"    
-
-
-
-
-  # Aplicació per accedir via web a la nostra base de dades, al port 9090
-  adminer:
-    image: adminer:4.7.7
-    restart: always
+      - ./laravel:/var/www
+    command: >
+      bash -c "apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev zip unzip git 
+      libonig-dev libxml2-dev && docker-php-ext-install pdo pdo_mysql gd
+      && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+      && composer install
+      && php artisan key:generate
+      && php artisan migrate
+      && php artisan serve --host=0.0.0.0"
     ports:
-      - 9090:8080
+      - "8000:8000"
     depends_on:
       - db
 
+  nuxt-app:
+    image: node:18-bullseye
+    container_name: nuxt
+    working_dir: /app
+    volumes:
+      - ./nuxtCine:/app
+    command: bash -c "pwd && ls -la && echo 'INI' && npm install && echo 'segon'&& npm i @pinia/nuxt && npm install pinia && npx nodemon -L --watch . --exec 'npm run dev'"
+    ports:
+      - "3000:3000"
+
   db:
     image: mysql:8.2.0
-    restart: always
+    container_name: mysql_db
+    volumes:
+      - db-data2:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: laravel
       MYSQL_USER: user
       MYSQL_PASSWORD: user
     ports:
-      - 3306:3306
-    volumes:
-      # Per guardar les dades de forma persistent
-      - ./mysql_data:/var/lib/mysql
-      # Per crear algunes taules al primer inici
-      - ./mysql/dades.sql:/docker-entrypoint-initdb.d/dades.sql
+      - "3307:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: user
+      PMA_PASSWORD: user
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+
+volumes:
+  db-data2:

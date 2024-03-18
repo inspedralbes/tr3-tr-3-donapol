@@ -21,8 +21,8 @@ VALUES
 (1, 'true', 5, 6, 'false'), (1, 'true', 5, 7, 'false'), (1, 'true', 5, 8, 'false'), (1, 'true', 5, 9, 'false'), (1, 'true', 5, 10, 'false'),
 
 -- Fila 6
-(1, 'true', 6, 1, 'false'), (1, 'true', 6, 2, 'false'), (1, 'true', 6, 3, 'false'), (1, 'true', 6, 4, 'false'), (1, 'true', 6, 5, 'false'),
-(1, 'true', 6, 6, 'false'), (1, 'true', 6, 7, 'false'), (1, 'true', 6, 8, 'false'), (1, 'true', 6, 9, 'false'), (1, 'true', 6, 10, 'false'),
+(1, 'true', 6, 1, 'true'), (1, 'true', 6, 2, 'true'), (1, 'true', 6, 3, 'true'), (1, 'true', 6, 4, 'true'), (1, 'true', 6, 5, 'true'),
+(1, 'true', 6, 6, 'true'), (1, 'true', 6, 7, 'true'), (1, 'true', 6, 8, 'true'), (1, 'true', 6, 9, 'true'), (1, 'true', 6, 10, 'true'),
 
 -- Fila 7
 (1, 'true', 7, 1, 'false'), (1, 'true', 7, 2, 'false'), (1, 'true', 7, 3, 'false'), (1, 'true', 7, 4, 'false'), (1, 'true', 7, 5, 'false'),

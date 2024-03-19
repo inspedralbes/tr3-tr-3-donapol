@@ -37,4 +37,18 @@ class SeatController extends Controller
         return Seat::where('movie_id', $id)->get();
     }
 
+    public function updateStatus($id)
+    {
+        $seat = Seat::find($id);
+
+        if (!$seat) {
+            return response()->json(['message' => 'El asiento no se encontró'], 404);
+        }
+
+        $seat->status = 'false';
+        $seat->save();
+
+        return response()->json(['message' => 'Estado del asiento actualizado correctamente'], 200);
+    }
+
 }

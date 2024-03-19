@@ -13,7 +13,9 @@
       <!-- Campo de entrada para el correo electrónico -->
       <div v-if="mostrarEmail" class="email-field">
         <input type="email" placeholder="Introduzca su correo electrónico" v-model="email" />
-        <button @click="confirmarCompra">Confirmar Compra</button>
+        <button @click="confirmarCompra" :disabled="loading">Confirmar Compra</button>
+        <!-- Mostrar el indicador de carga si loading es verdadero -->
+        <img v-if="loading" src="cargando.gif" alt="Cargando..." />
       </div>
     </div>
     <!-- Botón para abrir el campo de entrada -->
@@ -31,7 +33,8 @@ export default {
       mostrarEmail: false,
       email: '',
       movieSessionId: null, 
-      seatId: null   // ID del asiento
+      seatId: null  
+      loading: false
     };
   },
   created() {
@@ -55,57 +58,57 @@ export default {
 
   methods: {
     confirmarCompra() {
-  const promises = this.infoSeients.map(infoSeient => {
-    const data = {
-      movie_id: this.movieSessionId,
-      seat_id: infoSeient.id,
-      preu: this.preuTotal,
-      email: this.email
-    };
+      this.loading = true; // Establecer loading a true al iniciar la carga
+      const promises = this.infoSeients.map(infoSeient => {
+        const data = {
+          movie_id: this.movieSessionId,
+          seat_id: infoSeient.id,
+          preu: this.preuTotal,
+          email: this.email
+        };
 
-    return fetch('http://localhost:8000/api/tickets', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    }).then(response => {
-      if (!response.ok) {
-        throw new Error('Error al confirmar la compra');
-      }
-      return infoSeient.id; // Retornar el ID del asiento para usarlo en la siguiente solicitud
-    });
-  });
-
-  Promise.all(promises)
-    .then(seatIds => {
-      const updatePromises = seatIds.map(seatId => {
-        return fetch(`http://localhost:8000/api/seats/${seatId}/status`, {
-          method: 'PATCH', // Utilizar PATCH
+        return fetch('http://localhost:8000/api/tickets', {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ status: 'false' })
+          body: JSON.stringify(data)
         }).then(response => {
           if (!response.ok) {
-            throw new Error('Error al actualizar el estado del asiento');
+            throw new Error('Error al confirmar la compra');
           }
+          return infoSeient.id; // Retornar el ID del asiento para usarlo en la siguiente solicitud
         });
       });
 
-      return Promise.all(updatePromises);
-    })
-    .then(() => {
-      this.$router.push('/cartelera');
-      console.log('Compras confirmadas exitosamente');
-    })
-    .catch(error => {
-      console.error('Error al confirmar la compra:', error);
-    });
-}
+      Promise.all(promises)
+        .then(seatIds => {
+          const updatePromises = seatIds.map(seatId => {
+            return fetch(`http://localhost:8000/api/seats/${seatId}/status`, {
+              method: 'PATCH', // Utilizar PATCH
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ status: 'false' })
+            }).then(response => {
+              if (!response.ok) {
+                throw new Error('Error al actualizar el estado del asiento');
+              }
+            });
+          });
 
-
-
+          return Promise.all(updatePromises);
+        })
+        .then(() => {
+          this.loading = false; // Establecer loading a false después de completar la carga
+          this.$router.push('/cartelera');
+          console.log('Compras confirmadas exitosamente');
+        })
+        .catch(error => {
+          this.loading = false; // Establecer loading a false en caso de error
+          console.error('Error al confirmar la compra:', error);
+        });
+    }
   }
 }
 </script>

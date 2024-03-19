@@ -2,20 +2,26 @@
   <div>
     <Header />
     <div class="ticket">
-      <h1>Ticket Compra</h1>
+      <h1>Ticket Compraa</h1>
       <p class="movie-title">Película: {{ nomPeli }}</p>
-      <div v-if="infoSeients.length > 0" class="seat-details">
+      <div v-if="infoSeients.length > 0 && !loading" class="seat-details">
         <div v-for="(infoSeient, index) in infoSeients" :key="index">
           <p>Fila: {{ infoSeient.fila }}, Columna: {{ infoSeient.columna }}</p>
         </div>
       </div>
-      <p v-if="preuTotal" class="total-price">Preu Total: ${{ preuTotal }}</p>
+      <p v-if="preuTotal && !loading" class="total-price">Preu Total: ${{ preuTotal }}</p>
       <!-- Campo de entrada para el correo electrónico -->
-      <div v-if="mostrarEmail" class="email-field">
+      <div v-if="mostrarEmail && !loading" class="email-field">
         <input type="email" placeholder="Introduzca su correo electrónico" v-model="email" />
-        <button @click="confirmarCompra" :disabled="loading">Confirmar Compra</button>
-        <!-- Mostrar el indicador de carga si loading es verdadero -->
-        <img v-if="loading" src="cargando.gif" alt="Cargando..." />
+        <button @click="confirmarCompra">Confirmar Compra</button>
+      </div>
+      <!-- Mensaje de carga -->
+      <div v-if="loading" class="loading-overlay">
+        <p>Esperi un segon, siusplau...</p>
+        <img
+          src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"
+          alt="Cargando..."
+        />
       </div>
     </div>
     <!-- Botón para abrir el campo de entrada -->
@@ -33,32 +39,32 @@ export default {
       mostrarEmail: false,
       email: '',
       movieSessionId: null, 
-      seatId: null  
+      seatId: null,   // ID del asiento
       loading: false
     };
   },
   created() {
-  this.preuTotal = this.$route.query.preuTotal;
+    this.preuTotal = this.$route.query.preuTotal;
 
-  // Parsear el JSON de infoSeients desde la URL si está disponible
-  if (this.$route.query.infoSeients) {
-    this.infoSeients = JSON.parse(this.$route.query.infoSeients);
-    // Obtener el ID del primer asiento seleccionado
-    if (this.infoSeients.length > 0) {
-      this.seatId = this.infoSeients[0].id;
+    // Parsear el JSON de infoSeients desde la URL si está disponible
+    if (this.$route.query.infoSeients) {
+      this.infoSeients = JSON.parse(this.$route.query.infoSeients);
+      // Obtener el ID del primer asiento seleccionado
+      if (this.infoSeients.length > 0) {
+        this.seatId = this.infoSeients[0].id;
+      }
     }
-  }
-  if (this.$route.query.nomPeli) {
-    this.nomPeli = this.$route.query.nomPeli;
-  }
+    if (this.$route.query.nomPeli) {
+      this.nomPeli = this.$route.query.nomPeli;
+    }
 
-  // Obtener el ID de la película de la URL
-  this.movieSessionId = this.$route.query.movieSessionId;
-},
+    // Obtener el ID de la película de la URL
+    this.movieSessionId = this.$route.query.movieSessionId;
+  },
 
   methods: {
     confirmarCompra() {
-      this.loading = true; // Establecer loading a true al iniciar la carga
+      this.loading = true;
       const promises = this.infoSeients.map(infoSeient => {
         const data = {
           movie_id: this.movieSessionId,
@@ -77,7 +83,7 @@ export default {
           if (!response.ok) {
             throw new Error('Error al confirmar la compra');
           }
-          return infoSeient.id; // Retornar el ID del asiento para usarlo en la siguiente solicitud
+          return infoSeient.id; 
         });
       });
 
@@ -85,7 +91,7 @@ export default {
         .then(seatIds => {
           const updatePromises = seatIds.map(seatId => {
             return fetch(`http://localhost:8000/api/seats/${seatId}/status`, {
-              method: 'PATCH', // Utilizar PATCH
+              method: 'PATCH', 
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -100,13 +106,14 @@ export default {
           return Promise.all(updatePromises);
         })
         .then(() => {
-          this.loading = false; // Establecer loading a false después de completar la carga
           this.$router.push('/cartelera');
           console.log('Compras confirmadas exitosamente');
         })
         .catch(error => {
-          this.loading = false; // Establecer loading a false en caso de error
           console.error('Error al confirmar la compra:', error);
+        })
+        .finally(() => {
+          this.loading = false; 
         });
     }
   }

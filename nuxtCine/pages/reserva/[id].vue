@@ -105,9 +105,6 @@ export default {
         .then((data) => {
           if (data) {
             this.movie_session = data;
-            console.log("SESSION", this.movie_session);
-            console.log("DATA", data);
-            console.log("ID", this.movie_session_id);
             this.fetch_fet = true;
           } else {
             console.log("ERROR FETCHING DATA");
@@ -124,8 +121,6 @@ export default {
         .then((data) => {
           if (data) {
             this.seients = data;
-            console.log("SESSION", this.seients);
-            console.log("DATA", data);
             this.fetchSeients_fet = true;
           } else {
             console.log("ERROR FETCHING DATA");
@@ -147,7 +142,7 @@ export default {
           this.selected_seients.push(seat);
         } else {
           alert(
-            `Solo puedes seleccionar un máximo de ${this.maxSeients} asientos.`
+            `Nomes pots selecionar un maxim de ${this.maxSeients} seients.`
           );
         }
       } else {

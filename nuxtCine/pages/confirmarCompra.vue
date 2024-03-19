@@ -55,32 +55,56 @@ export default {
 
   methods: {
     confirmarCompra() {
-  const data = {
-    movie_id: this.movieSessionId, // ID de la película
-    seat_id: this.seatId,   // ID del asiento
-    preu: this.preuTotal,
-    email: this.email
-  };
+  const promises = this.infoSeients.map(infoSeient => {
+    const data = {
+      movie_id: this.movieSessionId,
+      seat_id: infoSeient.id,
+      preu: this.preuTotal,
+      email: this.email
+    };
 
-  fetch('http://localhost:8000/api/tickets', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data)
-  })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Error al confirmar la compra');
-    }
-    // Aquí puedes redirigir a una página de confirmación o hacer cualquier otra acción necesaria
-    this.$router.push('/cartelera');
-    console.log('Compra confirmada exitosamente');
-  })
-  .catch(error => {
-    console.error('Error:', error);
+    return fetch('http://localhost:8000/api/tickets', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error('Error al confirmar la compra');
+      }
+      return infoSeient.id; // Retornar el ID del asiento para usarlo en la siguiente solicitud
+    });
   });
+
+  Promise.all(promises)
+    .then(seatIds => {
+      const updatePromises = seatIds.map(seatId => {
+        return fetch(`http://localhost:8000/api/seats/${seatId}/status`, {
+          method: 'PATCH', // Utilizar PATCH
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ status: 'false' })
+        }).then(response => {
+          if (!response.ok) {
+            throw new Error('Error al actualizar el estado del asiento');
+          }
+        });
+      });
+
+      return Promise.all(updatePromises);
+    })
+    .then(() => {
+      this.$router.push('/cartelera');
+      console.log('Compras confirmadas exitosamente');
+    })
+    .catch(error => {
+      console.error('Error al confirmar la compra:', error);
+    });
 }
+
+
 
   }
 }

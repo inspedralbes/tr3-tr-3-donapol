@@ -11,7 +11,9 @@
           <h3>{{ estreno.titol }}</h3>
           <p><b>Director:</b> {{ estreno.director }}</p>
           <p><b>Año:</b> {{ estreno.any }}</p>
+          <p><b>Sessió: </b>{{ estreno.hora }}</p>
           <p>{{ estreno.descripcio }}</p>
+
 
           <NuxtLink :to="'/reserva/' + estreno.id">
             <button class="reservar-button">Reservar seints</button>

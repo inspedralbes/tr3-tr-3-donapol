@@ -9,7 +9,7 @@
           <p>Fila: {{ infoSeient.fila }}, Columna: {{ infoSeient.columna }}</p>
         </div>
       </div>
-      <p v-if="preuTotal && !loading" class="total-price">Preu Total: ${{ preuTotal }}</p>
+      <p v-if="preuTotal && !loading" class="total-price">Preu Total: {{ preuTotal }}€</p>
       <!-- Campo de entrada para el correo electrónico -->
       <div v-if="mostrarEmail && !loading" class="email-field">
         <input type="email" placeholder="Introduzca su correo electrónico" v-model="email" />

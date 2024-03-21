@@ -23,6 +23,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// Ruta per verificar si un usuari a fet login
+    Route::middleware('auth:api')->get('/check-auth', [AuthController::class, 'checkAuth']);
+
+//Rutas per els usuaris
+    Route::post('register', [App\Http\Controllers\AuthController::class, 'register']);
+    Route::post('login', [App\Http\Controllers\AuthController::class, 'login']);
+
 // Rutas per las películas
     Route::post('movies', [App\Http\Controllers\MovieController::class, 'insert']); //Insertar nueva peli
     Route::get('movies', [App\Http\Controllers\MovieController::class, 'index']); //Mostrar todas las pelis

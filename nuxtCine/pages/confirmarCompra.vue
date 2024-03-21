@@ -73,48 +73,56 @@ export default {
           email: this.email
         };
 
-        return fetch('http://localhost:8000/api/tickets', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        }).then(response => {
-          if (!response.ok) {
-            throw new Error('Error al confirmar la compra');
-          }
-          return infoSeient.id; 
-        });
+        return this.reservarAsiento(data); // Llama funció per reserva seient
       });
 
       Promise.all(promises)
         .then(seatIds => {
+          this.$router.push('/cartelera');
           const updatePromises = seatIds.map(seatId => {
-            return fetch(`http://localhost:8000/api/seats/${seatId}/status`, {
-              method: 'PATCH', 
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ status: 'false' })
-            }).then(response => {
-              if (!response.ok) {
-                throw new Error('Error al actualizar el estado del asiento');
-              }
-            });
+            return this.cambiarEstadoAsiento(seatId); // Llamada a la función de cambio de estado de asiento
           });
 
           return Promise.all(updatePromises);
         })
         .then(() => {
-          this.$router.push('/cartelera');
-          console.log('Compras confirmadas exitosamente');
-        })
-        .catch(error => {
-          console.error('Error al confirmar la compra:', error);
+          
+          console.log('Compra confirmadas exitosamente');
         })
         .finally(() => {
-          this.loading = false; 
+          this.loading = false;
         });
+    },
+    
+    // Función para reservar asiento
+    reservarAsiento(data) {
+      return fetch('http://localhost:8000/api/tickets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Error al confirmar la compra');
+        }
+        return data.seat_id;
+      });
+    },
+
+    // Función para cambiar estado de asiento
+    cambiarEstadoAsiento(seatId) {
+      return fetch(`http://localhost:8000/api/seats/${seatId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ status: 'false' })
+      }).then(response => {
+        if (!response.ok) {
+          throw new Error('Error al actualizar el estado del asiento');
+        }
+      });
     }
   }
 }
